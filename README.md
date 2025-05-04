@@ -5,7 +5,7 @@
 ## Установка
 Клонируйте репозиторий:
 1. ```git clone https://github.com/stepanbaidakov/e-commerce.git```
-
+2. 
 
 ## Использование 
 
