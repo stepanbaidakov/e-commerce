@@ -44,7 +44,7 @@ def product_samsung():
     )
 
 
-def test_add_product(product_iphone, product_samsung,):
+def test_add_product(product_samsung, product_iphone):
     category_devices = Category("devices", "мобильные устройства", [product_iphone])
     category_devices.add_product(product_samsung)
     assert len(category_devices.products) == 2
