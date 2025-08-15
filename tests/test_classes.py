@@ -1,5 +1,6 @@
 import pytest
-from src.classes import Product, Category
+
+from src.classes import Category, Product
 
 
 @pytest.fixture
@@ -50,10 +51,6 @@ def test_add_product(product_samsung, product_iphone):
     assert len(category_devices.products) == 2
 
 
-def test_products(category_devices):
-    assert category_devices.products == ["iPhone, 90000 руб. Остаток: 100 шт."]
-
-
 def test_new_product():
     new_product = Product.new_product(
         {
@@ -79,3 +76,15 @@ def test_new_price_negative(product_samsung):
     product_samsung.price = -100
     assert "Цена не должна быть нулевая или отрицательная"
     assert product_samsung.price == 180000.0
+
+
+def test_str_product(product_iphone):
+    assert product_iphone.__str__() == "iPhone, 90000 руб. Остаток: 100 шт."
+
+
+def test_str_category(category_devices):
+    assert category_devices.__str__() == "devices, количество продуктов: 5 шт."
+
+
+def test_add_function(product_iphone, product_samsung):
+    assert product_iphone.__add__(product_samsung) == 9900000.0
