@@ -76,6 +76,7 @@ class Category:
 
 
 class ProductIterator:
+    """Производит итерацию по товарам, которые находятся в данной категории"""
     category: Category
 
     def __init__(self, category):
