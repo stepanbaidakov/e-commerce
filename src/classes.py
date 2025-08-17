@@ -77,11 +77,12 @@ class Category:
 
 class ProductIterator:
     """Производит итерацию по товарам, которые находятся в данной категории"""
+
     category: Category
 
     def __init__(self, category):
-        if not isinstance(category, Category):
-            raise ValueError("Объект должен быть класса Category")
+        # if not isinstance(category, Category):
+        #     raise ValueError("Объект должен быть класса Category")
         self.category = category
         self.index = 0
 

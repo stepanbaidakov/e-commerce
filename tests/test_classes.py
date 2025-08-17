@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, Product
+from src.classes import Category, Product, ProductIterator
 
 
 @pytest.fixture
@@ -88,3 +88,29 @@ def test_str_category(category_devices):
 
 def test_add_function(product_iphone, product_samsung):
     assert product_iphone.__add__(product_samsung) == 9900000.0
+
+
+@pytest.fixture
+def category():
+    class Category:
+        def __init__(self):
+            self.products = ["товар1", "товар2", "товар3"]
+            self.product_count = len(self.products)
+
+    return Category()
+
+
+def test_iterator_returns_products_in_order(category):
+    iterator = ProductIterator(category)
+    products = list(iterator)  # прогон итератора
+    assert products == ["товар1", "товар2", "товар3"]
+
+
+def test_iterator_stop_iteration(category):
+    iterator = ProductIterator(category)
+    # вручную прогоняем до конца
+    next(iterator)
+    next(iterator)
+    next(iterator)
+    with pytest.raises(StopIteration):
+        next(iterator)
