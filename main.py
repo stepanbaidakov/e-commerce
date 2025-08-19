@@ -16,7 +16,6 @@ if __name__ == '__main__':
     )
 
     print(str(category1))
-
     print(category1.products)
 
     print(product1 + product2)
