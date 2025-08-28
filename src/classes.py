@@ -37,9 +37,16 @@ class Product:
         else:
             print("Цена не должна быть нулевая или отрицательная")
 
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        return self.__price * self.quantity + other.price * other.quantity
+
 
 class Category:
     """Класс категорий"""
+
     name: str
     description: str
     products: list[Product]
@@ -60,9 +67,35 @@ class Category:
             self.__products.append(product)
             Category.product_count += 1
 
+    def __str__(self):
+        pieces_count = 0
+        for product in self.__products:
+            pieces_count += product.quantity
+        return f"{self.name}, количество продуктов: {pieces_count} шт."
+
     @property
     def products(self):
-        result = []
-        for product in self.__products:
-            result.append(f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.")
-        return result
+        return self.__products
+
+
+class ProductIterator:
+    """Производит итерацию по товарам, которые находятся в данной категории"""
+
+    category: Category
+
+    def __init__(self, category):
+        # if not isinstance(category, Category):
+        #     raise ValueError("Объект должен быть класса Category")
+        self.category = category
+        self.index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index < self.category.product_count:
+            product = self.category.products[self.index]
+            self.index += 1
+            return product
+        else:
+            raise StopIteration
