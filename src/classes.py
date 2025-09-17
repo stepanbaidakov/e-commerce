@@ -1,3 +1,6 @@
+from mypy.checker import TypeRange
+
+
 class Product:
     """Класс для получения данных о товаре"""
 
@@ -37,9 +40,19 @@ class Product:
         else:
             print("Цена не должна быть нулевая или отрицательная")
 
+    def __str__(self):
+        return f"{self.name}, {self.price} руб. Остаток: {self.quantity} шт."
+
+    def __add__(self, other):
+        if isinstance(other, Product):
+            return self.__price * self.quantity + other.price * other.quantity
+        else:
+            raise TypeError
+
 
 class Category:
     """Класс категорий"""
+
     name: str
     description: str
     products: list[Product]
@@ -52,17 +65,71 @@ class Category:
         self.description = description
         self.__products = products
 
-        Category.product_count += len(products)
+        Category.product_count = len(products)
         Category.category_count += 1
 
     def add_product(self, product):
         if isinstance(product, Product):
             self.__products.append(product)
             Category.product_count += 1
+        else:
+            raise TypeError("Можно добавлять только объекты класса Product")
+
+    def __str__(self):
+        pieces_count = 0
+        for product in self.__products:
+            pieces_count += product.quantity
+        return f"{self.name}, количество продуктов: {pieces_count} шт."
 
     @property
     def products(self):
-        result = []
-        for product in self.__products:
-            result.append(f"{product.name}, {product.price} руб. Остаток: {product.quantity} шт.")
-        return result
+        return self.__products
+
+
+class ProductIterator:
+    """Производит итерацию по товарам, которые находятся в данной категории"""
+
+    category: Category
+
+    def __init__(self, category):
+        # if not isinstance(category, Category):
+        #     raise ValueError("Объект должен быть класса Category")
+        self.category = category
+        self.index = 0
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        if self.index < self.category.product_count:
+            product = self.category.products[self.index]
+            self.index += 1
+            return product
+        else:
+            raise StopIteration
+
+class Smartphone(Product):
+    def __init__(self, name, description, price, quantity, efficiency, model, memory, color):
+        super().__init__(name, description, price, quantity)
+        self.efficiency = efficiency
+        self.model = model
+        self.memory = memory
+        self.color = color
+
+    def __add__(self, other):
+        if type(other) is self.__class__:
+            return super().__add__(other)
+        raise TypeError
+
+
+class LawnGrass(Product):
+    def __init__(self, name, description, price, quantity, country, germination_period, color):
+        super().__init__(name, description, price, quantity)
+        self.country = country
+        self.germination_period = germination_period
+        self.color = color
+
+    def __add__(self, other):
+        if type(other) is self.__class__:
+            return super().__add__(other)
+        raise TypeError
