@@ -1,6 +1,6 @@
 import pytest
 
-from src.classes import Category, Product, ProductIterator
+from src.classes import Category, Product, ProductIterator, Smartphone, LawnGrass
 
 
 @pytest.fixture
@@ -83,11 +83,16 @@ def test_str_product(product_iphone):
 
 
 def test_str_category(category_devices):
-    assert category_devices.__str__() == "devices, количество продуктов: 5 шт."
+    assert category_devices.__str__() == "devices, количество продуктов: 100 шт."
 
 
 def test_add_function(product_iphone, product_samsung):
-    assert product_iphone.__add__(product_samsung) == 9900000.0
+    assert product_iphone + product_samsung == 9900000.0
+
+
+def test_add_different_function(product_samsung, category_devices):
+    with pytest.raises(TypeError):
+        product_samsung + category_devices
 
 
 @pytest.fixture
@@ -114,3 +119,110 @@ def test_iterator_stop_iteration(category):
     next(iterator)
     with pytest.raises(StopIteration):
         next(iterator)
+
+
+@pytest.fixture
+def smartphone_1():
+    return Smartphone(
+        "Samsung Galaxy S23 Ultra",
+        "256GB, Серый цвет, 200MP камера",
+        180000.0,
+        5,
+        95.5,
+        "S23 Ultra",
+        256,
+        "Серый",
+    )
+
+
+def test_smartphone_init(smartphone_1):
+    assert smartphone_1.efficiency == 95.5
+    assert smartphone_1.model == "S23 Ultra"
+    assert smartphone_1.memory == 256
+    assert smartphone_1.color == "Серый"
+
+
+@pytest.fixture
+def lawn_grass_1():
+    return LawnGrass(
+        "Газонная трава",
+        "Элитная трава для газона",
+        500.0,
+        20,
+        "Россия",
+        "7 дней",
+        "Зеленый",
+    )
+
+
+def test_lawn_grass_init(lawn_grass_1):
+    assert lawn_grass_1.country == "Россия"
+    assert lawn_grass_1.germination_period == "7 дней"
+    assert lawn_grass_1.color == "Зеленый"
+
+
+@pytest.fixture
+def lawn_grass_2():
+    return LawnGrass(
+        "Газонная трава 2",
+        "Выносливая трава",
+        450.0,
+        15,
+        "США",
+        "5 дней",
+        "Темно-зеленый",
+    )
+
+
+@pytest.fixture
+def category_grass(lawn_grass_1):
+    return Category("Газонная трава", "Различные виды газонной травы", [lawn_grass_1])
+
+
+def test_similar_product_added_grass(category_grass, lawn_grass_2):
+    category_grass.add_product(lawn_grass_2)
+    assert category_grass.product_count == 2
+
+
+def test_wrong_product_added(category_grass):
+    with pytest.raises(TypeError):
+        category_grass.add_product("Not a product")
+
+
+def test_sum_of_similar_grass(lawn_grass_1, lawn_grass_2):
+    assert lawn_grass_1 + lawn_grass_2 == 16750.0
+
+
+def test_sum_of_different_grass(lawn_grass_1, smartphone_1):
+    with pytest.raises(TypeError):
+        lawn_grass_1 + smartphone_1
+
+
+@pytest.fixture
+def smartphone_2():
+    return Smartphone(
+        "Iphone 15", "512GB, Gray space", 210000.0, 8, 98.2, "15", 512, "Gray space"
+    )
+
+
+def test_sum_of_similar_smartphone(smartphone_1, smartphone_2):
+    assert smartphone_1 + smartphone_2 == 2580000.0
+
+
+def test_sum_of_different_smartphone(smartphone_1, lawn_grass_1):
+    with pytest.raises(TypeError):
+        smartphone_1 + lawn_grass_1
+
+
+# @pytest.fixture
+# def category_smartphone(smartphone_1):
+#     return Category("Смартфоны", "Высокотехнологичные смартфоны", [smartphone_1])
+#
+# def test_similar_product_added(category_smartphone, smartphone_2):
+#     category_smartphone.add_product(smartphone_2)
+#     assert category_smartphone.product_count == 2
+#
+#
+# def test_wrong_product_added_smartphone(category_smartphone):
+#     with pytest.raises(TypeError):
+#         category_smartphone.add_product("Not a smartphone")
