@@ -1,5 +1,4 @@
 from src.classes import Smartphone, LawnGrass, Category
-from tests.test_classes import category
 
 if __name__ == '__main__':
     if __name__ == '__main__':
