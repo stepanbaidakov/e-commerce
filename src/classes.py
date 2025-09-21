@@ -1,4 +1,33 @@
-class Product:
+from abc import ABC, abstractmethod
+
+
+class BaseProduct(ABC):
+    """Базовый класс для всех продуктов"""
+
+    @abstractmethod
+    def __init__(self):
+        pass
+
+    @abstractmethod
+    def __add__(self, other):
+        pass
+
+    @abstractmethod
+    def __str__(self):
+        pass
+
+
+class MixinLog:
+
+    def __init__(self):
+        print(repr(self))
+        super().__init__()
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}(\"{self.name}\", \"{self.description}\", {self.price}, {self.quantity})"
+
+
+class Product(MixinLog, BaseProduct):
     """Класс для получения данных о товаре"""
 
     name: str
@@ -11,6 +40,7 @@ class Product:
         self.description = description
         self.__price = price
         self.quantity = quantity
+        super().__init__()
 
     @classmethod
     def new_product(cls, product_info):
@@ -45,6 +75,26 @@ class Product:
             return self.__price * self.quantity + other.price * other.quantity
         else:
             raise TypeError
+
+
+class BaseModel(ABC):
+    """Базовый класс для заказов и категорий"""
+
+    @abstractmethod
+    def __init__(self):
+        pass
+
+
+class Order(Product, BaseModel):
+    """Класс для заказов ссылающейся на один купленный товар"""
+
+    def __init__(self, name, description, price, quantity):
+        # return cls(product.name, product.description, product.price, product.quantity)
+        # self.name = product.name
+        # self.description = product.description
+        # self.price = product.price
+        # self.quantity = product.quantity
+        super().__init__(name, description, price, quantity)
 
 
 class Category:
@@ -107,6 +157,13 @@ class ProductIterator:
 
 
 class Smartphone(Product):
+    """Класс для товаров смартфонов"""
+
+    efficiency: float
+    model: str
+    memory: int
+    color: str
+
     def __init__(
         self, name, description, price, quantity, efficiency, model, memory, color
     ):
@@ -118,6 +175,12 @@ class Smartphone(Product):
 
 
 class LawnGrass(Product):
+    """Класс для товаров газонной травы"""
+
+    country: str
+    germination_period = str
+    color: str
+
     def __init__(
         self, name, description, price, quantity, country, germination_period, color
     ):
