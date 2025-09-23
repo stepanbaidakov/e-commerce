@@ -1,6 +1,14 @@
 import pytest
 
-from src.classes import Category, Product, ProductIterator, Smartphone, LawnGrass
+from src.classes import (
+    BaseProduct,
+    Category,
+    LawnGrass,
+    Order,
+    Product,
+    ProductIterator,
+    Smartphone,
+)
 
 
 @pytest.fixture
@@ -95,24 +103,27 @@ def test_add_different_function(product_samsung, category_devices):
         product_samsung + category_devices
 
 
+# @pytest.fixture
+# def category():
+#     class CategorySmall:
+#         def __init__(self):
+#             self.products = ["товар1", "товар2", "товар3"]
+#             self.product_count = len(self.products)
+#
+#     return CategorySmall()
 @pytest.fixture
-def category():
-    class Category:
-        def __init__(self):
-            self.products = ["товар1", "товар2", "товар3"]
-            self.product_count = len(self.products)
-
-    return Category()
+def category_2():
+    return Category("category_test", "for test", ["товар1", "товар2", "товар3"])
 
 
-def test_iterator_returns_products_in_order(category):
-    iterator = ProductIterator(category)
+def test_iterator_returns_products_in_order(category_2):
+    iterator = ProductIterator(category_2)
     products = list(iterator)  # прогон итератора
     assert products == ["товар1", "товар2", "товар3"]
 
 
-def test_iterator_stop_iteration(category):
-    iterator = ProductIterator(category)
+def test_iterator_stop_iteration(category_2):
+    iterator = ProductIterator(category_2)
     # вручную прогоняем до конца
     next(iterator)
     next(iterator)
@@ -214,15 +225,29 @@ def test_sum_of_different_smartphone(smartphone_1, lawn_grass_1):
         smartphone_1 + lawn_grass_1
 
 
-# @pytest.fixture
-# def category_smartphone(smartphone_1):
-#     return Category("Смартфоны", "Высокотехнологичные смартфоны", [smartphone_1])
-#
-# def test_similar_product_added(category_smartphone, smartphone_2):
-#     category_smartphone.add_product(smartphone_2)
-#     assert category_smartphone.product_count == 2
-#
-#
-# def test_wrong_product_added_smartphone(category_smartphone):
-#     with pytest.raises(TypeError):
-#         category_smartphone.add_product("Not a smartphone")
+def test_base_product():
+    assert issubclass(Product, BaseProduct)
+
+
+def test_mixinlog_repr(product_iphone):
+    assert repr(product_iphone) == 'Product("iPhone", "Хороший телефон", 90000, 100)'
+
+
+@pytest.fixture
+def order_iphone(product_iphone):
+    return Order(product_iphone, 10)
+
+
+def test_order_init(order_iphone):
+    assert order_iphone.product.name == "iPhone"
+    assert order_iphone.quantity == 10
+
+
+def test_order_init_to_many(product_iphone):
+    with pytest.raises(ValueError):
+        Order(product_iphone, 111)
+
+
+def test_product_iterator_init(category_2):
+    with pytest.raises(ValueError):
+        ProductIterator("Not a category")
