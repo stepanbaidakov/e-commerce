@@ -81,23 +81,20 @@ class BaseModel(ABC):
     """Базовый класс для заказов и категорий"""
 
     @abstractmethod
-    def __init__(self):
-        pass
+    def __init__(self, name):
+        self.name = name
 
 
-class Order(Product, BaseModel):
+class Order(BaseModel):
     """Класс для заказов ссылающейся на один купленный товар"""
 
-    def __init__(self, name, description, price, quantity):
-        # return cls(product.name, product.description, product.price, product.quantity)
-        # self.name = product.name
-        # self.description = product.description
-        # self.price = product.price
-        # self.quantity = product.quantity
-        super().__init__(name, description, price, quantity)
+    def __init__(self, name, quantity, price):
+        self.name = name
+        self.quantity = quantity
+        self.price = price
 
 
-class Category:
+class Category(BaseModel):
     """Класс категорий"""
 
     name: str
@@ -108,7 +105,7 @@ class Category:
     product_count = 0
 
     def __init__(self, name, description, products):
-        self.name = name
+        super().__init__(name)
         self.description = description
         self.__products = products
 
@@ -139,8 +136,8 @@ class ProductIterator:
     category: Category
 
     def __init__(self, category):
-        # if not isinstance(category, Category):
-        #     raise ValueError("Объект должен быть класса Category")
+        if not isinstance(category, Category):
+            raise ValueError("Объект должен быть класса Category")
         self.category = category
         self.index = 0
 
@@ -188,3 +185,16 @@ class LawnGrass(Product):
         self.country = country
         self.germination_period = germination_period
         self.color = color
+
+
+if __name__ == "__main__":
+    # pr1 = Product("iPhone", "Хороший телефон", 90000, 100)
+    # order = Order(pr1.name, pr1.quantity, pr1.price)
+    # print(order.name)
+    iph = Product("iPhone", "Хороший телефон", 90000, 100)
+    sam = Product(
+        "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5
+    )
+    cat = Category("devices", "мобильные устройства", [iph, sam])
+    for i in ProductIterator(cat):
+        print(i)

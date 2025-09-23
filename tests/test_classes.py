@@ -1,7 +1,14 @@
 import pytest
 
-from src.classes import (BaseProduct, Category, LawnGrass, Order, Product,
-                         ProductIterator, Smartphone)
+from src.classes import (
+    BaseProduct,
+    Category,
+    LawnGrass,
+    Order,
+    Product,
+    ProductIterator,
+    Smartphone,
+)
 
 
 @pytest.fixture
@@ -96,24 +103,27 @@ def test_add_different_function(product_samsung, category_devices):
         product_samsung + category_devices
 
 
+# @pytest.fixture
+# def category():
+#     class CategorySmall:
+#         def __init__(self):
+#             self.products = ["товар1", "товар2", "товар3"]
+#             self.product_count = len(self.products)
+#
+#     return CategorySmall()
 @pytest.fixture
-def category():
-    class CategorySmall:
-        def __init__(self):
-            self.products = ["товар1", "товар2", "товар3"]
-            self.product_count = len(self.products)
-
-    return CategorySmall()
+def category_2():
+    return Category("category_test", "for test", ["товар1", "товар2", "товар3"])
 
 
-def test_iterator_returns_products_in_order(category):
-    iterator = ProductIterator(category)
+def test_iterator_returns_products_in_order(category_2):
+    iterator = ProductIterator(category_2)
     products = list(iterator)  # прогон итератора
     assert products == ["товар1", "товар2", "товар3"]
 
 
-def test_iterator_stop_iteration(category):
-    iterator = ProductIterator(category)
+def test_iterator_stop_iteration(category_2):
+    iterator = ProductIterator(category_2)
     # вручную прогоняем до конца
     next(iterator)
     next(iterator)
@@ -220,16 +230,20 @@ def test_base_product():
 
 
 def test_mixinlog_repr(product_iphone):
-    assert repr(product_iphone) == "Product(\"iPhone\", \"Хороший телефон\", 90000, 100)"
+    assert repr(product_iphone) == 'Product("iPhone", "Хороший телефон", 90000, 100)'
 
 
 @pytest.fixture
 def order_iphone():
-    return Order("iPhone", "Хороший телефон", 90000, 100)
+    return Order("iPhone", 90000, 100)
 
 
 def test_order_init(order_iphone):
     assert order_iphone.name == "iPhone"
-    assert order_iphone.description == "Хороший телефон"
-    assert order_iphone.price == 90000
-    assert order_iphone.quantity == 100
+    assert order_iphone.price == 100
+    assert order_iphone.quantity == 90000
+
+
+def test_product_iterator_init(category_2):
+    with pytest.raises(ValueError):
+        ProductIterator("Not a category")
