@@ -234,14 +234,18 @@ def test_mixinlog_repr(product_iphone):
 
 
 @pytest.fixture
-def order_iphone():
-    return Order("iPhone", 90000, 100)
+def order_iphone(product_iphone):
+    return Order(product_iphone, 10)
 
 
 def test_order_init(order_iphone):
-    assert order_iphone.name == "iPhone"
-    assert order_iphone.price == 100
-    assert order_iphone.quantity == 90000
+    assert order_iphone.product.name == "iPhone"
+    assert order_iphone.quantity == 10
+
+
+def test_order_init_to_many(product_iphone):
+    with pytest.raises(ValueError):
+        Order(product_iphone, 111)
 
 
 def test_product_iterator_init(category_2):

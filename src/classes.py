@@ -88,10 +88,11 @@ class BaseModel(ABC):
 class Order(BaseModel):
     """Класс для заказов ссылающейся на один купленный товар"""
 
-    def __init__(self, name, quantity, price):
-        self.name = name
+    def __init__(self, product: Product, quantity):
+        self.product = product
+        if quantity > product.quantity:
+            raise ValueError("Такого количества товаров нет")
         self.quantity = quantity
-        self.price = price
 
 
 class Category(BaseModel):
@@ -188,13 +189,6 @@ class LawnGrass(Product):
 
 
 if __name__ == "__main__":
-    # pr1 = Product("iPhone", "Хороший телефон", 90000, 100)
-    # order = Order(pr1.name, pr1.quantity, pr1.price)
-    # print(order.name)
-    iph = Product("iPhone", "Хороший телефон", 90000, 100)
-    sam = Product(
-        "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 5
-    )
-    cat = Category("devices", "мобильные устройства", [iph, sam])
-    for i in ProductIterator(cat):
-        print(i)
+    pr1 = Product("iPhone", "Хороший телефон", 90000, 10)
+    order = Order(pr1, 11)
+    print(order.quantity)
