@@ -1,3 +1,5 @@
+from itertools import product
+
 import pytest
 
 from src.classes import (
@@ -7,7 +9,7 @@ from src.classes import (
     Order,
     Product,
     ProductIterator,
-    Smartphone,
+    Smartphone, AddingProductException,
 )
 
 
@@ -103,14 +105,6 @@ def test_add_different_function(product_samsung, category_devices):
         product_samsung + category_devices
 
 
-# @pytest.fixture
-# def category():
-#     class CategorySmall:
-#         def __init__(self):
-#             self.products = ["товар1", "товар2", "товар3"]
-#             self.product_count = len(self.products)
-#
-#     return CategorySmall()
 @pytest.fixture
 def category_2():
     return Category("category_test", "for test", ["товар1", "товар2", "товар3"])
@@ -249,5 +243,28 @@ def test_order_init_to_many(product_iphone):
 
 
 def test_product_iterator_init(category_2):
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         ProductIterator("Not a category")
+
+
+@pytest.fixture
+def category_smartphones(product_iphone, product_samsung):
+    return Category("devices", "мобильные устройства", [product_iphone, product_samsung])
+
+
+def test_middle_price(category_smartphones):
+    assert category_smartphones.middle_price() == 135000.0
+
+
+@pytest.fixture
+def empty_category():
+    return Category("devices", "мобильные устройства", [])
+
+
+def test_middle_price_zero(empty_category):
+    assert empty_category.middle_price() == 0
+
+
+def test_product_init_zero_quantity():
+    with pytest.raises(ValueError):
+        Product("iPhone", "Хороший телефон", 90000, 0)

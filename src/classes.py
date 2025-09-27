@@ -36,6 +36,8 @@ class Product(MixinLog, BaseProduct):
     quantity: int
 
     def __init__(self, name, description, price, quantity):
+        if quantity == 0:
+            raise ValueError("Товар с нулевым количеством не может быть добавлен.")
         self.name = name
         self.description = description
         self.__price = price
@@ -91,8 +93,16 @@ class Order(BaseModel):
     def __init__(self, product: Product, quantity):
         self.product = product
         if quantity > product.quantity:
-            raise ValueError("Такого количества товаров нет")
-        self.quantity = quantity
+            raise ValueError
+        try:
+            if product.quantity != 0:
+                self.quantity = quantity
+        except AddingProductException as e:
+            print(e)
+        else:
+            print("Товар успешно добавлен.")
+        finally:
+            print("Обработка добавления товара завершена.")
 
 
 class Category(BaseModel):
@@ -115,8 +125,16 @@ class Category(BaseModel):
 
     def add_product(self, product):
         if isinstance(product, Product):
-            self.__products.append(product)
-            Category.product_count += 1
+            try:
+                if product.quantity != 0:
+                    self.__products.append(product)
+                    Category.product_count += 1
+            except AddingProductException as e:
+                return e
+            else:
+                return "Товар успешно добавлен."
+            finally:
+                return "Обработка добавления товара завершена."
         else:
             raise TypeError("Можно добавлять только объекты класса Product")
 
@@ -130,6 +148,25 @@ class Category(BaseModel):
     def products(self):
         return self.__products
 
+    def middle_price(self):
+        try:
+            result = 0
+            for product in self.__products:
+                result += product.price
+            return result / len(self.__products)
+        except ZeroDivisionError:
+            return 0
+
+
+class AddingProductException(Exception):
+    """Класс для проверки количества товара"""
+
+    def __init__(self, *args):
+        self.message = args[0] if args else "Добавляется товар с нулевым количеством."
+
+    def __str__(self):
+        return self.message
+
 
 class ProductIterator:
     """Производит итерацию по товарам, которые находятся в данной категории"""
@@ -138,7 +175,7 @@ class ProductIterator:
 
     def __init__(self, category):
         if not isinstance(category, Category):
-            raise ValueError("Объект должен быть класса Category")
+            raise TypeError("Объект должен быть класса Category")
         self.category = category
         self.index = 0
 
@@ -189,6 +226,13 @@ class LawnGrass(Product):
 
 
 if __name__ == "__main__":
-    pr1 = Product("iPhone", "Хороший телефон", 90000, 10)
-    order = Order(pr1, 11)
-    print(order.quantity)
+    # pr1 = Product("iPhone", "Хороший телефон", 90000, 10)
+    # order = Order(pr1, 11)
+    # print(order.quantity)
+    product_iphone = Product("iPhone", "Хороший телефон", 90000, 10)
+    product_samsung = Product(
+        "Samsung Galaxy S23 Ultra", "256GB, Серый цвет, 200MP камера", 180000.0, 1
+    )
+    cat = Category("cat", "nothing", [product_samsung])
+
+    cat.add_product(product_samsung)
